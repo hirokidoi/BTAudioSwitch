@@ -1,0 +1,13 @@
+# build
+.build/
+build/
+*.xcodeproj
+.swiftpm/
+DerivedData/
+
+# macOS
+.DS_Store
+._*
+
+# scratch
+tmp/
