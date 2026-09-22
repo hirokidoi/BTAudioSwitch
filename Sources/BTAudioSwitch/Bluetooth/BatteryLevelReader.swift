@@ -62,6 +62,39 @@ enum BatteryLevel {
     }
 }
 
+enum CommandOutput {
+    private static let logger = Logger(subsystem: BundleInfo.subsystem, category: "battery")
+
+    static func run(_ executable: URL, arguments: [String]) async -> Data? {
+        await Task.detached(priority: .utility) {
+            runToEnd(executable, arguments: arguments)
+        }.value
+    }
+
+    private static func runToEnd(_ executable: URL, arguments: [String]) -> Data? {
+        let process = Process()
+        process.executableURL = executable
+        process.arguments = arguments
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = FileHandle.nullDevice
+        do {
+            try process.run()
+        } catch {
+            logger.error("\(executable.lastPathComponent, privacy: .public) failed to launch: \(error.localizedDescription, privacy: .public)")
+            return nil
+        }
+        // 終了を先に待つと出力がパイプの容量を超えたときに双方が止まる
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        guard process.terminationStatus == 0 else {
+            logger.error("\(executable.lastPathComponent, privacy: .public) exited status=\(process.terminationStatus, privacy: .public)")
+            return nil
+        }
+        return data
+    }
+}
+
 final class FallbackBatteryReader: BatteryLevelReader, Sendable {
     private let readers: [any BatteryLevelReader]
 

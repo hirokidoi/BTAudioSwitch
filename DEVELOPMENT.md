@@ -55,6 +55,7 @@ Layer dependencies point one way: the switching logic (Switching) reaches CoreAu
 ### Battery Level
 
 - The battery level is read first from a private IOBluetooth property (the same value as the macOS menu), and if that fails, from the output of system_profiler. Public means alone sometimes cannot get the value even when macOS has it. The private means may be lost in an OS update, but losing it only moves reading to the next source or leaves the level undisplayed; it does not affect switching.
+- The private IOBluetooth property is read in a short-lived child process that runs the app's own executable, not in the running app. Within a long-running process the value delivered at connection time can be empty, and later updates to it do not reach the process, so reading it in the app can keep returning nothing.
 - The battery level is kept independent of the switching logic, in a separate component (BatteryMonitor), so that success, failure, or delay in reading does not spill over into switching.
 - The battery level is read only while the registered device is connected, at these moments: when the app sees it become connected (including at launch and when the registration switches to a connected device), and when the user looks at it (opening the menu, the settings window becoming key). It is not polled. Reading it at connection time lets it show immediately the next time the user looks.
 
