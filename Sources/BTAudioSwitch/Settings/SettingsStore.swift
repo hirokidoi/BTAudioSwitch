@@ -7,7 +7,7 @@ final class SettingsStore {
     static let defaultsKey = "BTAudioSwitch.settings.v1"
     private static let logger = Logger(subsystem: BundleInfo.subsystem, category: "settings")
 
-    private let defaults: UserDefaults
+    private let defaults: any PreferenceStore
 
     var settings: AppSettings {
         didSet {
@@ -19,12 +19,12 @@ final class SettingsStore {
 
     var onChange: (() -> Void)?
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: any PreferenceStore) {
         self.defaults = defaults
         settings = Self.load(from: defaults)
     }
 
-    private static func load(from defaults: UserDefaults) -> AppSettings {
+    private static func load(from defaults: any PreferenceStore) -> AppSettings {
         guard let data = defaults.data(forKey: defaultsKey) else { return AppSettings() }
         do {
             return try JSONDecoder().decode(AppSettings.self, from: data)

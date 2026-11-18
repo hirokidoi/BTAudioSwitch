@@ -5,10 +5,8 @@ import Testing
 @MainActor
 @Suite("設定の保存")
 struct SettingsStoreTests {
-    private func withStore(_ body: (SettingsStore, UserDefaults) throws -> Void) rethrows {
-        let name = TestDefaults.makeName()
-        let defaults = UserDefaults(suiteName: name)!
-        defer { TestDefaults.remove(name: name, defaults: defaults) }
+    private func withStore(_ body: (SettingsStore, MemoryPreferences) throws -> Void) rethrows {
+        let defaults = MemoryPreferences()
         try body(SettingsStore(defaults: defaults), defaults)
     }
 

@@ -100,9 +100,11 @@ When input switching is on, the input works with the same structure.
 
 ## Build and Test
 
-`make test` runs `swift test` and, when it passes, cleans up the throwaway storage the tests create. The decision logic (pure functions) and the switching logic wired with fake Audio and Bluetooth are automated here. The CoreAudio read path is verified by going through the real HAL, read-only.
+`make test` runs `swift test`. The decision logic (pure functions) and the switching logic wired with fake Audio and Bluetooth are automated here. The CoreAudio read path is verified by going through the real HAL, read-only.
 
 Tests never call IOBluetooth. Calling it from the test runner gets it force-terminated, because the runner does not hold the TCC permission. Fetching paired devices, connecting and disconnecting, and reading the battery level are replaced with fakes.
+
+Tests never touch the system's preferences either: the settings store takes a store that the tests replace with one in memory. Every preferences domain a test creates stays held by the system's preferences service until the Mac restarts, even after its file is removed, and enough of them stop preferences from working for every app.
 
 Writing the default input and output, operations through IOBluetooth, reading the battery level, and registering the login item all require real hardware, so they are outside the automation and are checked on real hardware whenever they change.
 

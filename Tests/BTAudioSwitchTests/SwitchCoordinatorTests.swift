@@ -23,10 +23,7 @@ struct SwitchCoordinatorTests {
         waitForSettleTimeout: @escaping @Sendable () async -> Void = {},
         _ body: (SwitchCoordinator, FakeAudioDeviceDirectory, FakeBluetoothDirectory, SettingsStore) async throws -> Void
     ) async rethrows {
-        let name = TestDefaults.makeName()
-        let defaults = UserDefaults(suiteName: name)!
-        defer { TestDefaults.remove(name: name, defaults: defaults) }
-        let store = SettingsStore(defaults: defaults)
+        let store = SettingsStore(defaults: MemoryPreferences())
         store.settings.registeredDevice = registeredDevice
         configure(&store.settings)
         let audio = FakeAudioDeviceDirectory(devices: devices)

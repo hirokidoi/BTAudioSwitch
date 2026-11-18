@@ -4,7 +4,7 @@ import AppKit
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let audio: any AudioDeviceDirectory = CoreAudioDirectory()
     private let bluetooth: any BluetoothDirectory = IOBluetoothDirectory()
-    private let settingsStore = SettingsStore()
+    private let settingsStore = SettingsStore(defaults: UserDefaults.standard)
     private lazy var coordinator = SwitchCoordinator(audio: audio, bluetooth: bluetooth, settingsStore: settingsStore)
     private lazy var batteryMonitor = BatteryMonitor(
         reader: FallbackBatteryReader([IOBluetoothBatteryReader(), SystemProfilerBatteryReader()]),

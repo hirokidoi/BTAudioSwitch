@@ -46,10 +46,7 @@ struct BatteryMonitorTests {
         reader: FakeBatteryLevelReader,
         _ body: (BatteryMonitor, SettingsStore) async throws -> Void
     ) async rethrows {
-        let name = TestDefaults.makeName()
-        let defaults = UserDefaults(suiteName: name)!
-        defer { TestDefaults.remove(name: name, defaults: defaults) }
-        let store = SettingsStore(defaults: defaults)
+        let store = SettingsStore(defaults: MemoryPreferences())
         store.settings.registeredDevice = RegisteredDevice(address: Self.address, name: "Headphone X2")
         try await body(BatteryMonitor(reader: reader, settingsStore: store), store)
     }
